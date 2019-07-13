@@ -106,6 +106,23 @@ based API to a L<Mojo::Promise> based API.
 It might not be the most efficient way to run your code, but it will allow
 you to easily add methods that will return promises.
 
+This method only works with methods that passes on C<$err> as the first argument
+to the callback, like this:
+
+  sub get_stuff_by_id {
+    my ($self, $id, $cb) = @_;
+
+    my $err = "Some error";
+    my $res = undef;
+    $self->$cb($err, $res);
+
+    return $self;
+  }
+
+It can however pass on as many arguments as it wants after the C<$err> and all
+will be passed on to the fulfillment callback in the promise. C<$err> on the
+other hand will cause the promise to be rejected.
+
 =head1 FUNCTIONS
 
 =head2 promisify
