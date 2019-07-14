@@ -11,23 +11,16 @@ Mojo::Promisify - Convert callback code to promise based code
     my $nb_obj = Some::NonBlockingClass->new;
 
     # Call a callback based method, but return a Mojo::Promise
-    promisify_call($nb_obj => get_stuff_by_id => 42)->then(sub {
-      my @res = shift;
-      warn @res;
-    })->catch(sub {
-      my $err = shift;
-      die $err;
-    });
+    promisify_call($nb_obj => get_stuff_by_id => 42)
+      ->then(sub { print @_ })
+      ->catch(sub { warn $_[0] });
 
     # Add a method that wraps around the callback based method and return a
     # Mojo::Promise.
     promisify_patch "Some::NonBlockingClass" => "get_stuff_by_id";
 
     # The added method has the "_p" suffix
-    $nb_obj->get_stuff_by_id_p(42)->then(sub {
-      my @res = shift;
-      warn @res;
-    });
+    $nb_obj->get_stuff_by_id_p(42)->then(sub { print @_ });
 
 # DESCRIPTION
 
@@ -37,7 +30,7 @@ based API to a [Mojo::Promise](https://metacpan.org/pod/Mojo::Promise) based API
 It might not be the most efficient way to run your code, but it will allow
 you to easily add methods that will return promises.
 
-This method only works with methods that passes on `$err` as the first argument
+This module only works with methods that passes on `$err` as the first argument
 to the callback, like this:
 
     sub get_stuff_by_id {
@@ -50,9 +43,9 @@ to the callback, like this:
       return $self;
     }
 
-It can however pass on as many arguments as it wants after the `$err` and all
-will be passed on to the fulfillment callback in the promise. `$err` on the
-other hand will cause the promise to be rejected.
+The wrapped method can however pass on as many arguments as it wants after the
+`$err` and all will be passed on to the fulfillment callback in the promise.
+The promise will be rejected if `$err` has a value.
 
 Note that this module is currently EXPERIMENTAL, but it will most probably not
 change much.
@@ -64,27 +57,24 @@ change much.
     $code = promisify($obj => $method);
     $promise = $code->(@args);
 
-Will return a curried function that wraps around a given `$method` in a
-`$class` and returns a promise. `@args` are the same arguments you would
-normally give to the `$method`, but without the callback at the end.
-
-It can be useful to use this function instead of ["promisify\_call"](#promisify_call), in case
-you want to call the same `$method` on the _same_ object over and over again.
+Returns a closure that wraps around a given `$method` for the `$obj` and
+returns a promise. `@args` are the same arguments you would normally give to
+the `$method`, but without the callback at the end.
 
 ## promisify\_call
 
     $promise = promisify_call($obj => $method, @args);
 
-This function basically does:
+This function is the same as:
 
-    my $promise = promisify($obj => $method)->(@args);
+    $promise = promisify($obj => $method)->(@args);
 
 ## promisify\_patch
 
     promisify_patch $class, @methods;
 
-Used to monkey patch a class with new promise based methods. The methods that
-are patched in, will have the "\_p" suffix added.
+Used to patch a class with new promise based methods. The methods that are
+patched in will have the "\_p" suffix added.
 
 Note that this function _will_ replace existing methods!
 
