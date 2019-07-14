@@ -114,7 +114,7 @@ to the callback, like this:
 
     my $err = "Some error";
     my $res = undef;
-    $self->$cb($err, $res);
+    Mojo::IOLoop->next_tick(sub { $self->$cb($err, $res) });
 
     return $self;
   }
