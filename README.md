@@ -37,6 +37,26 @@ based API to a [Mojo::Promise](https://metacpan.org/pod/Mojo::Promise) based API
 It might not be the most efficient way to run your code, but it will allow
 you to easily add methods that will return promises.
 
+This method only works with methods that passes on `$err` as the first argument
+to the callback, like this:
+
+    sub get_stuff_by_id {
+      my ($self, $id, $cb) = @_;
+
+      my $err = "Some error";
+      my $res = undef;
+      Mojo::IOLoop->next_tick(sub { $self->$cb($err, $res) });
+
+      return $self;
+    }
+
+It can however pass on as many arguments as it wants after the `$err` and all
+will be passed on to the fulfillment callback in the promise. `$err` on the
+other hand will cause the promise to be rejected.
+
+Note that this module is currently EXPERIMENTAL, but it will most probably not
+change much.
+
 # FUNCTIONS
 
 ## promisify

@@ -10,7 +10,7 @@ my %WriteMakefileArgs = (
   EXE_FILES      => [qw()],
   BUILD_REQUIRES => {},
   TEST_REQUIRES  => {'Test::More' => '0.88'},
-  PREREQ_PM      => {'Mojolicious' => '8.00'},
+  PREREQ_PM      => {'Mojolicious' => '7.62'},
   META_MERGE     => {
     'dynamic_config' => 0,
     'meta-spec'      => {version => 2},
