@@ -123,6 +123,9 @@ It can however pass on as many arguments as it wants after the C<$err> and all
 will be passed on to the fulfillment callback in the promise. C<$err> on the
 other hand will cause the promise to be rejected.
 
+Note that this module is currently EXPERIMENTAL, but it will most probably not
+change much.
+
 =head1 FUNCTIONS
 
 =head2 promisify
